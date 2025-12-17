@@ -5,15 +5,15 @@ Script FiveM pour placer des peds cinématiques avec un système de freecam avan
 ## Caractéristiques
 
 ### Placement
-- Spawn automatique 0.8m devant le joueur au sol (parfait pour MLO)
-- Détection automatique du sol avec retry (GetGroundZFor_3dCoord)
+- Spawn automatique 0.8m devant le joueur à la même hauteur (parfait pour MLO)
+- Placement précis sans détection automatique du sol (reste au niveau du joueur)
 - Mode placement automatique après spawn
 - Freecam avec contrôles complets :
   - **ZQSD** : Déplacer la caméra
   - **Souris** : Regarder autour
   - **Espace/Ctrl** : Monter/Descendre
 - Le ped suit le raycast de la caméra en temps réel
-- **Touche X** : Rotation du ped (+15° par appui)
+- **Touches X/C** : Rotation du ped droite/gauche (±15° par appui)
 - Affichage de la rotation actuelle en temps réel
 - **Clic gauche** : Valider le placement
 - **Clic droit** : Annuler le placement
@@ -54,7 +54,7 @@ Aucune ! Le script fonctionne sans dépendance externe.
 3. Le ped apparaît juste devant vous (0.8m) et le mode placement s'active automatiquement
 4. Déplacez la caméra avec ZQSD et regardez avec la souris
 5. Le ped suit votre visée (raycast) en temps réel
-6. Appuyez sur X pour faire pivoter le ped de 15° (rotation affichée à l'écran)
+6. Appuyez sur X ou C pour faire pivoter le ped de ±15° (rotation affichée à l'écran)
 7. Clic gauche pour valider ou clic droit pour annuler
 8. Les coordonnées vector4 s'affichent dans la console F8 après validation
 

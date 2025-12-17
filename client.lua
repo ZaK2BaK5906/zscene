@@ -7,28 +7,6 @@ local freecamCoords = nil
 local pedRotation = 0.0
 local spawnedPeds = {}
 
--- Fonction pour obtenir les coordonnées au sol avec retry
-local function GetGroundZ(x, y, z)
-    local retries = 0
-    local maxRetries = 10
-    local groundZ = z
-    local found = false
-
-    while retries < maxRetries and not found do
-        found, groundZ = GetGroundZFor_3dCoord(x, y, z + 100.0, false)
-
-        if found then
-            return groundZ
-        end
-
-        retries = retries + 1
-        Wait(100)
-    end
-
-    -- Si pas trouvé, retourner la coordonnée Z originale
-    return z
-end
-
 -- Fonction pour créer la freecam
 local function CreateFreecam(coords)
     freecam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
@@ -86,9 +64,8 @@ local function GetRaycastCoords()
             return nil
         end
 
-        -- Obtenir la vraie coordonnée Z du sol
-        local groundZ = GetGroundZ(coords.x, coords.y, coords.z)
-        return vector3(coords.x, coords.y, groundZ)
+        -- Retourner directement les coordonnées du raycast (pas de GetGroundZ pour MLO)
+        return coords
     end
 
     return nil
@@ -149,13 +126,10 @@ local function SpawnCinematicPed(pedId)
 
     local forwardX = playerCoords.x + (math.sin(math.rad(playerHeading)) * -0.8)  -- 0.8m seulement
     local forwardY = playerCoords.y + (math.cos(math.rad(playerHeading)) * 0.8)
-    local forwardZ = playerCoords.z
-
-    -- Obtenir coordonnée Z au sol avec retry
-    local groundZ = GetGroundZ(forwardX, forwardY, forwardZ)
+    local forwardZ = playerCoords.z  -- Même hauteur que le joueur (parfait pour MLO)
 
     -- Créer le ped
-    local ped = CreatePed(4, modelHash, forwardX, forwardY, groundZ, playerHeading, false, true)
+    local ped = CreatePed(4, modelHash, forwardX, forwardY, forwardZ, playerHeading, false, true)
 
     SetEntityAlpha(ped, 150, false)  -- Plus transparent pour mieux voir
     SetEntityCollision(ped, false, false)
@@ -332,11 +306,18 @@ CreateThread(function()
                 SetEntityHeading(currentPed, pedRotation)
             end
 
-            -- Touche X pour rotation
-            if IsControlJustPressed(0, 73) then -- X
+            -- Touches X et C pour rotation
+            if IsControlJustPressed(0, 73) then -- X (rotation droite)
                 pedRotation = pedRotation + 15.0
                 if pedRotation >= 360.0 then
                     pedRotation = pedRotation - 360.0
+                end
+            end
+
+            if IsControlJustPressed(0, 26) then -- C (rotation gauche)
+                pedRotation = pedRotation - 15.0
+                if pedRotation < 0.0 then
+                    pedRotation = pedRotation + 360.0
                 end
             end
 
@@ -365,7 +346,7 @@ CreateThread(function()
                 "~g~ZQSD~w~ : Déplacer caméra\n" ..
                 "~g~Souris~w~ : Regarder\n" ..
                 "~g~Espace/Ctrl~w~ : Monter/Descendre\n" ..
-                "~g~X~w~ : Rotation ped (+15°)\n" ..
+                "~g~X/C~w~ : Rotation droite/gauche (15°)\n" ..
                 "~o~Rotation actuelle : " .. math.floor(pedRotation) .. "°~w~\n" ..
                 "~g~Clic gauche~w~ : Valider\n" ..
                 "~g~Clic droit~w~ : Annuler"
