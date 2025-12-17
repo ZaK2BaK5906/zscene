@@ -48,6 +48,12 @@ local function DestroyFreecam()
         freecam = nil
         freecamCoords = nil
     end
+
+    -- S'assurer que le joueur est visible et contrôlable
+    local playerPed = PlayerPedId()
+    SetEntityVisible(playerPed, true, false)
+    SetEntityAlpha(playerPed, 255, false)
+    FreezeEntityPosition(playerPed, false)
 end
 
 -- Fonction pour obtenir les coordonnées du raycast
@@ -75,7 +81,14 @@ local function GetRaycastCoords()
     local _, hit, coords, _, _ = GetShapeTestResult(rayHandle)
 
     if hit then
-        return coords
+        -- Vérifier que les coordonnées ne sont pas trop basses (sous la map)
+        if coords.z < -100.0 then
+            return nil
+        end
+
+        -- Obtenir la vraie coordonnée Z du sol
+        local groundZ = GetGroundZ(coords.x, coords.y, coords.z)
+        return vector3(coords.x, coords.y, groundZ)
     end
 
     return nil
@@ -144,10 +157,11 @@ local function SpawnCinematicPed(pedId)
     -- Créer le ped
     local ped = CreatePed(4, modelHash, forwardX, forwardY, groundZ, playerHeading, false, true)
 
-    SetEntityAlpha(ped, 200, false)
+    SetEntityAlpha(ped, 150, false)  -- Plus transparent pour mieux voir
     SetEntityCollision(ped, false, false)
     FreezeEntityPosition(ped, true)
     SetBlockingOfNonTemporaryEvents(ped, true)
+    SetEntityInvincible(ped, true)
 
     currentPed = ped
     currentPedId = pedId
@@ -239,10 +253,18 @@ CreateThread(function()
         Wait(0)
 
         if placementMode then
-            -- Désactiver les contrôles du joueur
-            DisableAllControlActions(0)
-            EnableControlAction(0, 1, true)  -- LookLeftRight
-            EnableControlAction(0, 2, true)  -- LookUpDown
+            -- S'assurer que le joueur reste visible
+            local playerPed = PlayerPedId()
+            SetEntityVisible(playerPed, true, false)
+            SetEntityAlpha(playerPed, 255, false)
+
+            -- Désactiver seulement les contrôles de mouvement (pas tous)
+            DisableControlAction(0, 30, true) -- MoveLeftRight
+            DisableControlAction(0, 31, true) -- MoveUpDown
+            DisableControlAction(0, 21, true) -- Sprint
+            DisableControlAction(0, 22, true) -- Jump
+            DisableControlAction(0, 23, true) -- Enter
+            DisableControlAction(0, 75, true) -- Exit Vehicle
 
             -- Mouvement de la caméra
             local camSpeed = 0.2
