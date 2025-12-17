@@ -5,7 +5,7 @@ Script FiveM pour placer des peds cinématiques avec un système de freecam avan
 ## Caractéristiques
 
 ### Placement
-- Spawn automatique 2m devant le joueur au sol
+- Spawn automatique 0.8m devant le joueur au sol (parfait pour MLO)
 - Détection automatique du sol avec retry (GetGroundZFor_3dCoord)
 - Mode placement automatique après spawn
 - Freecam avec contrôles complets :
@@ -14,12 +14,14 @@ Script FiveM pour placer des peds cinématiques avec un système de freecam avan
   - **Espace/Ctrl** : Monter/Descendre
 - Le ped suit le raycast de la caméra en temps réel
 - **Touche X** : Rotation du ped (+15° par appui)
+- Affichage de la rotation actuelle en temps réel
 - **Clic gauche** : Valider le placement
 - **Clic droit** : Annuler le placement
 
 ### Interface
 - Instructions affichées en haut à droite avec DrawText natif GTA
-- Menu ox_lib avec `/cinelist` pour sélectionner les peds
+- Affichage de la rotation actuelle du ped
+- Commande `/cinelist` pour afficher la liste complète dans F8
 - 38 peds cinématiques avec scenarios configurés
 
 ### Fonctionnalités
@@ -37,25 +39,24 @@ Script FiveM pour placer des peds cinématiques avec un système de freecam avan
 
 ## Installation
 
-1. Placez le dossier `zscene` dans votre répertoire `resources`
-2. Assurez-vous d'avoir `ox_lib` installé et démarré
-3. Ajoutez `ensure zscene` dans votre `server.cfg`
-4. Redémarrez votre serveur
+1. Placez le dossier dans votre répertoire `resources`
+2. Ajoutez `ensure [nom_du_dossier]` dans votre `server.cfg`
+3. Redémarrez votre serveur
 
 ## Dépendances
 
-- ox_lib
+Aucune ! Le script fonctionne sans dépendance externe.
 
 ## Exemple d'utilisation
 
-1. Tapez `/cinelist` pour ouvrir le menu
-2. Sélectionnez un ped dans la liste
-3. Le ped apparaît devant vous et le mode placement s'active automatiquement
+1. Tapez `/cinelist` dans F8 pour voir tous les peds disponibles
+2. Utilisez `/cinespawn [ID]` pour spawner un ped (ex: `/cinespawn 1`)
+3. Le ped apparaît juste devant vous (0.8m) et le mode placement s'active automatiquement
 4. Déplacez la caméra avec ZQSD et regardez avec la souris
-5. Le ped suit votre visée (raycast)
-6. Appuyez sur X pour faire pivoter le ped
+5. Le ped suit votre visée (raycast) en temps réel
+6. Appuyez sur X pour faire pivoter le ped de 15° (rotation affichée à l'écran)
 7. Clic gauche pour valider ou clic droit pour annuler
-8. Les coordonnées vector4 s'affichent dans la console F8
+8. Les coordonnées vector4 s'affichent dans la console F8 après validation
 
 ## Liste des Peds
 

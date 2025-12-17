@@ -32,12 +32,12 @@ end
 -- Fonction pour créer la freecam
 local function CreateFreecam(coords)
     freecam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
-    SetCamCoord(freecam, coords.x, coords.y, coords.z + 2.0)
-    SetCamRot(freecam, -20.0, 0.0, GetEntityHeading(PlayerPedId()))
+    SetCamCoord(freecam, coords.x, coords.y, coords.z + 0.5)  -- Caméra à hauteur du ped
+    SetCamRot(freecam, -10.0, 0.0, GetEntityHeading(PlayerPedId()))  -- Angle plus doux
     SetCamActive(freecam, true)
     RenderScriptCams(true, true, 500, true, true)
 
-    freecamCoords = vector3(coords.x, coords.y, coords.z + 2.0)
+    freecamCoords = vector3(coords.x, coords.y, coords.z + 0.5)
 end
 
 -- Fonction pour détruire la freecam
@@ -142,13 +142,13 @@ local function SpawnCinematicPed(pedId)
         return
     end
 
-    -- Obtenir position devant le joueur
+    -- Obtenir position devant le joueur (très proche pour MLO)
     local playerPed = PlayerPedId()
     local playerCoords = GetEntityCoords(playerPed)
     local playerHeading = GetEntityHeading(playerPed)
 
-    local forwardX = playerCoords.x + (math.sin(math.rad(playerHeading)) * -2.0)
-    local forwardY = playerCoords.y + (math.cos(math.rad(playerHeading)) * 2.0)
+    local forwardX = playerCoords.x + (math.sin(math.rad(playerHeading)) * -0.8)  -- 0.8m seulement
+    local forwardY = playerCoords.y + (math.cos(math.rad(playerHeading)) * 0.8)
     local forwardZ = playerCoords.z
 
     -- Obtenir coordonnée Z au sol avec retry
@@ -350,7 +350,7 @@ CreateThread(function()
                 CancelPlacement()
             end
 
-            -- Afficher les instructions
+            -- Afficher les instructions avec rotation actuelle
             SetTextFont(0)
             SetTextProportional(1)
             SetTextScale(0.0, 0.35)
@@ -366,6 +366,7 @@ CreateThread(function()
                 "~g~Souris~w~ : Regarder\n" ..
                 "~g~Espace/Ctrl~w~ : Monter/Descendre\n" ..
                 "~g~X~w~ : Rotation ped (+15°)\n" ..
+                "~o~Rotation actuelle : " .. math.floor(pedRotation) .. "°~w~\n" ..
                 "~g~Clic gauche~w~ : Valider\n" ..
                 "~g~Clic droit~w~ : Annuler"
             )
@@ -377,28 +378,18 @@ CreateThread(function()
     end
 end)
 
--- Commande /cinelist - Menu ox_lib
+-- Commande /cinelist - Liste des peds
 RegisterCommand('cinelist', function()
-    local options = {}
+    print("^2========== PEDS CINÉMATIQUES ==========^7")
+    print("^3Utilisez /cinespawn [ID] pour spawner un ped^7")
+    print("")
 
     for _, ped in ipairs(Config.CinematicPeds) do
-        table.insert(options, {
-            title = ped.label,
-            description = "ID: " .. ped.id .. " | Modèle: " .. ped.model,
-            icon = 'user',
-            onSelect = function()
-                SpawnCinematicPed(ped.id)
-            end
-        })
+        print(string.format("^5ID %d^7 : %s ^8(modèle: %s)^7", ped.id, ped.label, ped.model))
     end
 
-    lib.registerContext({
-        id = 'cinematic_peds_menu',
-        title = 'Peds Cinématiques',
-        options = options
-    })
-
-    lib.showContext('cinematic_peds_menu')
+    print("")
+    print("^2========================================^7")
 end, false)
 
 -- Commande /cinespawn [ID]
